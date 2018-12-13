@@ -108,7 +108,7 @@ def get_dilbert_comic_link(date):
     return 'https:' + img_link
 
 def get_cyanide_comic_link(date):
-    base_url = 'https://explosm.net/'
+    base_url = 'https://explosm.net/comics/latest'
 
     if date is 'today':
         url = base_url
