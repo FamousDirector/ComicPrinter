@@ -54,9 +54,17 @@ def get_comic_image(name_of_comic, date):
     # get img link depending on comic and date chosen
     if name_of_comic is 'xkcd':
         comic_image_url = get_xkcd_comic_link(date)
+    elif name_of_comic is 'dilbert':
+        comic_image_url = get_dilbert_comic_link(date)
+    elif name_of_comic is 'cyanide':
+        comic_image_url = get_cyanide_comic_link(date)
+    elif name_of_comic is 'calvin':
+        comic_image_url = get_calvin_comic_link(date)
+    elif name_of_comic is 'overboard':
+        comic_image_url = get_overboard_comic_link(date)
 
     # get image data
-    response = requests.get('http:' + comic_image_url)
+    response = requests.get(comic_image_url)
     comic_image = Image.open(BytesIO(response.content))
 
     return comic_image.convert('RGB')
@@ -77,5 +85,80 @@ def get_xkcd_comic_link(date):
     site_soup = BeautifulSoup(data, "lxml")
     div_soup = site_soup.find("div", {"id": "comic"})
     img_link = div_soup.find('img').get("src")
+
+    return 'https:' + img_link
+
+def get_dilbert_comic_link(date):
+    base_url = 'https://dilbert.com/'
+
+    if date is 'today':
+        url = base_url
+    else:
+        #TODO implement getting different day
+        url = base_url
+
+    # get img link from website
+    r = requests.get(url)
+    data = r.text
+    site_soup = BeautifulSoup(data, "lxml")
+    div_soup = site_soup.find("a", {"class": "img-comic-link"})
+    img_link = div_soup.find('img').get("src")
+    # print img_link
+
+    return 'https:' + img_link
+
+def get_cyanide_comic_link(date):
+    base_url = 'https://explosm.net/'
+
+    if date is 'today':
+        url = base_url
+    else:
+        #TODO implement getting different day
+        url = base_url
+
+    # get img link from website
+    r = requests.get(url)
+    data = r.text
+    site_soup = BeautifulSoup(data, "lxml")
+    img_link = site_soup.find('img', {"id": "main-comic"}).get("src")
+    # print img_link
+
+    return 'https:' + img_link
+
+def get_calvin_comic_link(date):
+    base_url = 'https://www.gocomics.com/calvinandhobbes'
+
+    if date is 'today':
+        url = base_url
+    else:
+        #TODO implement getting different day
+        url = base_url
+
+    # get img link from website
+    r = requests.get(url)
+    data = r.text
+    site_soup = BeautifulSoup(data, "lxml")
+    div_soup = site_soup.find("div", {"class": "card"})
+    img_link = div_soup.find('img', {"class": "img-fluid"}).get("src")
+    # print img_link
+
+    return img_link
+
+def get_overboard_comic_link(date):
+    base_url = 'https://www.gocomics.com/overboard'
+
+    if date is 'today':
+        url = base_url
+    else:
+        #TODO implement getting different day
+        url = base_url
+
+    # get img link from website
+    r = requests.get(url)
+    data = r.text
+    site_soup = BeautifulSoup(data, "lxml")
+    div_soup = site_soup.find("div", {"class": "card"})
+    img_link = div_soup.find('img', {"class": "img-fluid"}).get("src")
+    # print img_link
 
     return img_link
