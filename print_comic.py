@@ -2,15 +2,51 @@ from bs4 import BeautifulSoup
 from PIL import Image
 import requests
 from io import BytesIO
-import numpy as np
 import escpos.printer
+import math
 
 def print_comic(name_of_comic, date='today'):
+    # connect to printer
+    printer = escpos.printer.Usb(0x0416, 0x5011, 0x4)
+    printer.hw("RESET")
+    printer.set(align="center", density=8)
+
+    # get comic image
+    temp_img_filename = "temp.png"
     img = get_comic_image(name_of_comic, date)
-    # TODO resize images to fit?
-    img.save('temp.png')
-    printer = escpos.printer.Usb('todo')
-    printer.text("Hello World\n")
+
+    maxwidth = 380.0
+    maxlength = 3
+
+    # format image
+    if (img.size[0]/img.size[1]) > 1.5:
+        img = img.rotate(270, expand=True)
+
+
+    length = img.size[1]
+    width = img.size[0]
+    ratio = maxwidth / width
+
+    new_length = math.floor(ratio * length)
+    new_width = math.floor(ratio * width)
+
+    new_size = int(new_width), int(new_length)
+
+    img = img.resize(new_size)
+    img.save(temp_img_filename)
+    # print image in slices
+    num_of_slices = int(math.floor(img.size[1]/maxlength))
+    for i in range(num_of_slices):
+        x = i * maxlength
+        y = (i + 1) * maxlength
+        temp_img = img.crop((0, x, img.size[0], y))
+        temp_img.save(temp_img_filename)
+        printer.image(temp_img_filename)
+
+    # feed some space
+    printer._raw(('\n').encode('UTF8'))
+    printer._raw(('\n').encode('UTF8'))
+    printer.hw("RESET")
 
 def get_comic_image(name_of_comic, date):
     comic_image_url = None
@@ -23,7 +59,8 @@ def get_comic_image(name_of_comic, date):
     response = requests.get('http:' + comic_image_url)
     comic_image = Image.open(BytesIO(response.content))
 
-    return comic_image
+    return comic_image.convert('RGB')
+
 
 def get_xkcd_comic_link(date):
     base_url = 'https://xkcd.com/'
