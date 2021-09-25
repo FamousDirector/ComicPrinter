@@ -86,8 +86,8 @@ class ComicPrinter:
 
     def __init__(self):
 
-        self.comic_name_array = ['xkcd', 'Dilbert', 'Calvin & Hobbes', 'Cyanide & Happiness', 'Overboard']
-        self.comic_lookup_array = ['xkcd', 'dilbert', 'calvin', 'cyanide', 'overboard']
+        self.comic_name_array = ['xkcd', 'Dilbert', 'Calvin & Hobbes', 'Overboard', 'Peanuts']
+        self.comic_lookup_array = ['xkcd', 'dilbert', 'calvin', 'overboard', 'peanuts']
         self.comic_index = 0
 
         self.random_option = False
