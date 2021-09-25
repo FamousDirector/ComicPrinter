@@ -1,6 +1,6 @@
 # ComicPrinter
 
-TODO put an image/gif here
+![Comic Printer in action!](/home/jamesc/PycharmProjects/ComicPrinter/comic_printer.gif "Comic Printer")
 
 ## Getting Started
 ### Hardware
