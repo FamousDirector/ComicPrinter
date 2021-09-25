@@ -54,6 +54,8 @@ def get_comic_image(name_of_comic, date=""):
         comic_image_url = get_peanuts_comic_link(date)
     elif name_of_comic is 'overboard':
         comic_image_url = get_overboard_comic_link(date)
+    elif name_of_comic is 'garfield':
+        comic_image_url = get_garfield_comic_link(date)
 
     # get image data
     response = requests.get(comic_image_url)
@@ -133,6 +135,22 @@ def get_overboard_comic_link(date):
         url = 'https://www.gocomics.com/random/overboard'
     else:
         url = f'https://www.gocomics.com/overboard/{dt.today().strftime("%Y/%m/%d")}'
+
+    # get img link from website
+    r = requests.get(url)
+    data = r.text
+    site_soup = BeautifulSoup(data, "html5lib")
+    div_soup = site_soup.find("div", {"class": "comic__container"})
+    picture_soup = div_soup.find('picture', {"class": "item-comic-image"})
+    img_link = picture_soup.find('img', {"class": "lazyload img-fluid"}).get("src")
+
+    return img_link
+
+def get_garfield_comic_link(date):
+    if date is 'random':
+        url = 'https://www.gocomics.com/random/garfield'
+    else:
+        url = f'https://www.gocomics.com/garfield/{dt.today().strftime("%Y/%m/%d")}'
 
     # get img link from website
     r = requests.get(url)
