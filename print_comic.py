@@ -32,14 +32,7 @@ def print_comic(img, temp_img_filename="temp.png"):
 
     img = img.resize(new_size)
     img.save(temp_img_filename)
-    # print image in slices
-    num_of_slices = int(math.floor(img.size[1] / maxlength))
-    for i in range(num_of_slices):
-        x = i * maxlength
-        y = (i + 1) * maxlength
-        temp_img = img.crop((0, x, img.size[0], y))
-        temp_img.save(temp_img_filename)
-        printer.image(temp_img_filename)
+    printer.image(temp_img_filename)
 
     # feed some space
     printer._raw(('\n').encode('UTF8'))
@@ -98,10 +91,7 @@ def get_dilbert_comic_link(date):
     div_soup = site_soup.find("a", {"class": "img-comic-link"})
     img_link = div_soup.find('img').get("src")
 
-    if date is 'random':
-        return img_link
-    else:
-        return 'https:' + img_link
+    return img_link
 
 
 def get_calvin_comic_link(date):
