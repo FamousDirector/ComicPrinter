@@ -1,19 +1,17 @@
 from bs4 import BeautifulSoup
 from PIL import Image
+import random
+import string
 import requests
 from io import BytesIO
 import escpos.printer
 import math
 
 
-def print_comic(name_of_comic, date='today'):
+def print_comic(img, temp_img_filename="temp.png"):
     # connect to printer
     printer = escpos.printer.Usb(0x0416, 0x5011, in_ep=0x81)
     printer.hw("RESET")
-
-    # get comic image
-    temp_img_filename = "temp.png"
-    img = get_comic_image(name_of_comic, date)
 
     maxwidth = 380.0
     maxlength = 200
@@ -71,12 +69,10 @@ def get_comic_image(name_of_comic, date):
 
 
 def get_xkcd_comic_link(date):
-    base_url = 'https://xkcd.com/'
-
     if date is 'random':
         url = 'https://c.xkcd.com/random/comic/'
     else:
-        url = base_url
+        url = 'https://xkcd.com/'
 
     # get img link from website
     r = requests.get(url)
@@ -89,12 +85,10 @@ def get_xkcd_comic_link(date):
 
 
 def get_dilbert_comic_link(date):
-    base_url = 'https://dilbert.com/'
-
     if date is 'random':
-        url = 'https://dilbert.com/search_results?terms=Random'
+        url = f'https://dilbert.com/search_results?terms={random.choice(string.ascii_letters)}'
     else:
-        url = base_url
+        url = 'https://dilbert.com/'
 
     # get img link from website
     r = requests.get(url)

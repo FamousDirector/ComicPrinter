@@ -1,6 +1,6 @@
 import time
 import traceback
-import RPi.GPIO as GPIO
+from gpiozero import LED, Button
 import requests.exceptions
 import usb.core
 from luma.core.interface.serial import i2c
@@ -13,13 +13,17 @@ import print_comic
 class ComicPrinter:
 
     def print_comic_callback(self, channel):
-        GPIO.output(5, GPIO.LOW)
-        self.update_screen('PRINTING...')
+        self.button_light.off()
         try:
+            self.update_screen('Downloading comic...')
             if self.random_option:
-                print_comic.print_comic(self.comic_lookup_array[self.comic_index], 'random')
+                img = print_comic.get_comic_image(self.comic_lookup_array[self.comic_index], 'random')
             else:
-                print_comic.print_comic(self.comic_lookup_array[self.comic_index])
+                img = print_comic.get_comic_image(self.comic_lookup_array[self.comic_index])
+
+            self.update_screen('Printing...')
+            print_comic.print_comic(img)
+
         except usb.core.USBTimeoutError:
             print(traceback.format_exc())
             self.update_screen("A timeout \nerror has \noccurred")
@@ -33,13 +37,13 @@ class ComicPrinter:
             self.update_screen("An unknown \nerror has \n occurred")
             time.sleep(5)
         finally:
-            GPIO.output(5, GPIO.HIGH)
+            self.button_light.on()
             self.show_menu()
 
     def change_comic_callback(self, channel):
-        clk_state = GPIO.input(self.clk_pin)
+        clk_state = self.encoder_turn_left.is_pressed
         if clk_state == self.clkLastState:
-            dt_state = GPIO.input(self.dt_pin)
+            dt_state = self.encoder_turn_right.is_pressed
             if dt_state == clk_state:
                 self.increment_comic_index()
                 self.show_menu()
@@ -90,25 +94,28 @@ class ComicPrinter:
 
         self.clkLastState = False
 
-        self.clk_pin = 20
-        self.dt_pin = 21
+        # encoder pins
+        self.en_clk_pin = 20   # encoder left - pin 37
+        self.en_dt_pin = 21   # encoder right - pin 36
+        self.en_push_pin = 4  # encoder push - pin 7
 
-        # GPIO SETUP
-        GPIO.setmode(GPIO.BCM)
+        # push button pins
+        self.button_push_pin = 12  # push button - pin 32
+        self.button_light_pin = 5  # button LED - pin 29
 
         # inputs
-        GPIO.setup(self.clk_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # encoder left - pin 37
-        GPIO.setup(self.dt_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # encoder right - pin 36
-        GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # push button - pin 32
-        GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # encoder push - pin 7
+        self.encoder_turn_left = Button(self.en_clk_pin)
+        self.encoder_turn_right = Button(self.en_dt_pin)
+        self.encoder_push = Button(self.en_push_pin)
+        self.button_push = Button(self.button_push_pin)
 
-        GPIO.add_event_detect(self.clk_pin, GPIO.FALLING, callback=self.change_comic_callback, bouncetime=300)
-        GPIO.add_event_detect(12, GPIO.FALLING, callback=self.print_comic_callback, bouncetime=300)
-        GPIO.add_event_detect(4, GPIO.FALLING, callback=self.switch_data_callback, bouncetime=300)
+        self.encoder_turn_left.when_pressed = self.change_comic_callback
+        self.encoder_push.when_pressed = self.switch_data_callback
+        self.button_push.when_pressed = self.print_comic_callback
 
         # outputs
-        GPIO.setup(5, GPIO.OUT)  # button LED - pin 29
-        GPIO.output(5, GPIO.HIGH)
+        self.button_light = LED(self.button_light_pin)
+        self.button_light.on()
 
         # screen
         serial = i2c(port=1, address=0x3c)
@@ -120,9 +127,6 @@ if __name__ == '__main__':
 
     c = ComicPrinter()
 
-    try:
-        while True:
-            pass
+    while True:
+        time.sleep(100)
 
-    except KeyboardInterrupt:
-        GPIO.cleanup()  # clean up GPIO on CTRL+C exit

@@ -6,3 +6,4 @@ luma.oled==3.8.1
 luma.core==2.3.1
 html5lib~=1.1
 python-escpos~=2.2.0
+gpiozero~=1.5.1
