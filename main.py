@@ -71,10 +71,10 @@ class ComicPrinter:
 
     def show_menu(self):
         if not self.random_option:
-            display_string = ('Print today\'s: \n' + self.comic_name_array[self.comic_index]
+            display_string = ('Print today\'s: \n> ' + self.comic_name_array[self.comic_index]
                               + '\ncomic strip?')
         else:
-            display_string = ('Print a random: \n' + self.comic_name_array[self.comic_index]
+            display_string = ('Print a random: \n> ' + self.comic_name_array[self.comic_index]
                               + '\ncomic strip?')
 
         self.update_screen(display_string)
@@ -82,7 +82,7 @@ class ComicPrinter:
     def update_screen(self, display_string):
         with canvas(self.screen) as draw:
             draw.rectangle(self.screen.bounding_box, outline="white", fill="black")
-            draw.text((10, 15), display_string, fill="white")
+            draw.text((10, 10), display_string, fill="white")
 
     def __init__(self):
 
