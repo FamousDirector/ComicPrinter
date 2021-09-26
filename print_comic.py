@@ -15,10 +15,9 @@ def print_comic(img, temp_img_filename="temp.png"):
     printer.hw("RESET")
 
     maxwidth = 380.0
-    maxlength = 200
 
-    # format image
-    if (img.size[0] / img.size[1]) > 1.5:
+    # rotate image to better fit paper
+    if img.size[0] > img.size[1]:
         img = img.rotate(270, expand=True)
 
     length = img.size[1]
