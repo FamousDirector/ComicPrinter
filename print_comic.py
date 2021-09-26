@@ -14,7 +14,7 @@ def print_comic(img, temp_img_filename="temp.png"):
     printer = escpos.printer.Usb(0x0416, 0x5011, in_ep=0x81)
     printer.hw("RESET")
 
-    maxwidth = 380.0
+    maxwidth = 370.0
 
     # rotate image to better fit paper
     if img.size[0] > img.size[1]:
