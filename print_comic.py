@@ -107,7 +107,7 @@ def get_calvin_comic_link(date):
     site_soup = BeautifulSoup(data, "html5lib")
     div_soup = site_soup.find("div", {"class": "comic__container"})
     picture_soup = div_soup.find('picture', {"class": "item-comic-image"})
-    img_link = picture_soup.find('img', {"class": "lazyload img-fluid"}).get("src")
+    img_link = picture_soup.find('img').get("src")
 
     return img_link
 
@@ -124,7 +124,7 @@ def get_peanuts_comic_link(date):
     site_soup = BeautifulSoup(data, "html5lib")
     div_soup = site_soup.find("div", {"class": "comic__container"})
     picture_soup = div_soup.find('picture', {"class": "item-comic-image"})
-    img_link = picture_soup.find('img', {"class": "lazyload img-fluid"}).get("src")
+    img_link = picture_soup.find('img').get("src")
 
     return img_link
 
@@ -141,7 +141,7 @@ def get_overboard_comic_link(date):
     site_soup = BeautifulSoup(data, "html5lib")
     div_soup = site_soup.find("div", {"class": "comic__container"})
     picture_soup = div_soup.find('picture', {"class": "item-comic-image"})
-    img_link = picture_soup.find('img', {"class": "lazyload img-fluid"}).get("src")
+    img_link = picture_soup.find('img').get("src")
 
     return img_link
 
@@ -157,6 +157,6 @@ def get_garfield_comic_link(date):
     site_soup = BeautifulSoup(data, "html5lib")
     div_soup = site_soup.find("div", {"class": "comic__container"})
     picture_soup = div_soup.find('picture', {"class": "item-comic-image"})
-    img_link = picture_soup.find('img', {"class": "lazyload img-fluid"}).get("src")
+    img_link = picture_soup.find('img').get("src")
 
     return img_link
